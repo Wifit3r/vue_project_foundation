@@ -9,7 +9,13 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
-    "vue": "^3.2.13"
+    "firebase": "^11.0.1",
+    "pinia": "^2.2.6",
+    "primeicons": "^7.0.0",
+    "toastr": "^2.1.4",
+    "vue": "^3.2.13",
+    "vue-router": "^4.0.13",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
