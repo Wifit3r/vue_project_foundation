@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { db } from '@/firebase';
 import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 
-
+/* eslint-disable */
 export const useStore = defineStore('admin', () => {
   const fetchNews = async () => {
     const querySnapshot = await getDocs(collection(db, 'news'));
@@ -16,8 +16,8 @@ export const useStore = defineStore('admin', () => {
 
   const updateNews = async (news) => {
     await updateDoc(doc(db, 'news', news.id), {
-      text: news.name,
-      title: news.desc,
+      text: news.text,
+      title: news.title
     });
   };
 
