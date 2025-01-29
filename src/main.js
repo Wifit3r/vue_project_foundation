@@ -1,17 +1,10 @@
-import 'primeicons/primeicons.css'
-import { createApp } from 'vue'
-import App from '@/App.vue'
-import './assets/null.css'
-import router from '../routers'
-import { createPinia } from 'pinia';
+import Vue from 'vue';
+import App from './App.vue';
+import router from './routes';
 
+Vue.config.productionTip = false;
 
-
-
-
-
-
-const pinia = createPinia();
-createApp(App).use(pinia)
-.use(router)
-.mount('#app')
+new Vue({
+  render: h => h(App),
+  router
+}).$mount('#app');

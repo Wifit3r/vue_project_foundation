@@ -11,18 +11,13 @@
         type: String,
         Required: true,
       }
-    },
-    methods:{
-      getId(){
-        return
-      }
     }
   }
   
 </script>
 
 <template>
-  <div class="card" v-on:click="getId">
+  <div class="card">
       <h3> {{ title }}</h3>
       <div class="spliter"></div>
       <p>{{ text }}</p>

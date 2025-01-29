@@ -1,8 +1,18 @@
 
+<template>
+  <div>
+    <HeaderVue></HeaderVue>
+    <div class="container">
+      <router-view></router-view>
+    </div>
+    <MyFooter></MyFooter>
+  </div>
+</template>
+
 <script>
 /* eslint-disable */
 import HeaderVue from './components/Header.vue';
-import MyFooter from './components/Footer.vue'
+import MyFooter from './components/Footer.vue';
 
 export default {
   components:{
@@ -12,17 +22,8 @@ export default {
 };
 </script>
 
-<template>
-  
-  <HeaderVue></HeaderVue>
-  <div class="container">
-    <RouterView></RouterView>  
-  </div>
-  <MyFooter></MyFooter>
-</template>
-
 <style>
+@import "./assets/null.css";
 .container{
-  margin-top: 170px;
 }
 </style>

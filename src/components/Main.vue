@@ -5,7 +5,6 @@ import cardGal from './cardGal.vue';
 
 
 export default{
-  
     name:"MainPage",
     components: {
     CardVue,
@@ -23,20 +22,24 @@ export default{
 </script>
 
 <template>
-<div class="card-container">
-    <CardVue :title="label1" :text="Text1" />
-    <CardVue :title="label" :text="Text" />
-    <cardGal />
+  <div>
+    <div class="card-container">
+      <CardVue :title="label1" :text="Text1" />
+      <CardVue :title="label" :text="Text" />
+      <cardGal />
+    </div>
+    <MyFooter />
   </div>
-  <MyFooter />
 </template>
+
+
 <style>
 .card-container {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: 180px;
+  margin-top: 80px;
 }
 
 </style>

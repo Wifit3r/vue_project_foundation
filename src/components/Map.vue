@@ -1,11 +1,12 @@
 <template>
-  <div id="map" class="map"></div>
-  <div class="card-container-map">
-  <CardVue :title=title
-           :text=text 
-  /> 
-</div>
+  <div>
+    <div id="map" class="map"></div>
+    <div class="card-container-map">
+      <CardVue :title="title" :text="text" />
+    </div>
+  </div>
 </template>
+
 
 <script>
 /* eslint-disable */
@@ -66,7 +67,7 @@ export default {
   fill: #000;
 }
 .map{
-  margin-top: 160px;
+  margin-top: 60px;
   padding: 20px;
   background-color: #666;
   z-index: -1;

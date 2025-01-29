@@ -1,114 +1,93 @@
 <template>
   <div class="container">
-    <div class="header">
+    <div>
       <h2 class="title">Новини про роботу фонду</h2>
     </div>
     
     <ul class="container-news">
-      <CardVue v-for="(newsItem, index) in news" :key="index" :text="newsItem.text" :title="newsItem.title">
-        <div class="buttons">
-          <button class="edit-button" @click="editNews(newsItem)">Редагувати</button>
-          <button class="delete-button" @click="deleteNews(newsItem.id)">Видалити</button>
-        </div>
-      </CardVue>
+      <CardVue v-for="(newsItem, index) in news" :key="index" :text="newsItem" :title=titles[index] />
     </ul>
 
-    <div class="form-container">
-      <h3>Додати новину</h3>
-      <form @submit.prevent="addNews">
-        <label for="titleNews">Заголовок Новини:</label> 
-        <input type="text" v-model="titelNews" id="titleNews" required />
-        <label for="newNews">Нова новина:</label>
-        <input type="text" v-model="newNews" id="newNews" required />
-        <button type="submit" class="submit-button">Додати</button>
-      </form>
-    </div>
-
-    <div class="form-container">
-      <h3>Редагувати новину</h3>
-      <form @submit.prevent="updateNewsByTitle">
-        <label for="editTitle">Заголовок Новини:</label>
-        <select v-model="editTitle" required>
-            <option disabled value="">Select title</option>
-            <option v-for="news in news" :key="news.id" :value="news.title">{{ news.title }}</option>
-        </select>
-        <label for="editText">Новий Текст Новини:</label>
-        <input type="text" v-model="editText" id="editText" required />
-        <button type="submit" class="submit-button">Редагувати</button>
-      </form>
-    </div>
-
-    <div class="form-container">
-      <h3>Видалити новину</h3>
-      <form @submit.prevent="deleteNewsByTitle">
-        <label for="deleteTitle">Заголовок Новини:</label>
-        <input type="text" v-model="deleteTitle" id="deleteTitle" required />
-        <button type="submit" class="delete-button">Видалити</button>
-      </form>
-    </div>
+    <h3>Додати новину</h3>
+    <form @submit.prevent="addNews">
+      <label for="newNews">Нова новина:</label>
+      <label for="titleNews">Заголовок Новини</label> 
+      <input type="text" v-model="titelNews" id="titleNews" required>
+      <input type="text" v-model="newNews" id="newNews" required>
+      <button type="submit">Додати</button>
+    </form>
   </div>
 </template>
 
 <script>
+/* eslint-disable */
+import { createApp } from 'vue';
 import CardVue from './Card.vue';
-import { useStore } from '@/store/store'; 
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, setDoc, doc } from 'firebase/firestore';
+import toastr from "toastr";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCnN2KBDhgpVXOot9zsZubvlbN_aXXyLpI",
+  authDomain: "project-11-226f7.firebaseapp.com",
+  projectId: "project-11-226f7",
+  storageBucket: "project-11-226f7.firebasestorage.app",
+  messagingSenderId: "4589284462",
+  appId: "1:4589284462:web:b4833c742984dbdd8e0a7f",
+  measurementId: "G-BSY7N6PLXQ"
+};
+
+// Ініціалізація Firebase
+const app = initializeApp(firebaseConfig);
+
+// Отримання посилання на Firestore
+const db = getFirestore(app);
+
+// Отримання посилань на колекції
+const titlesRef = collection(db, 'titles');
+const newsRef = collection(db, 'news');
+
+// Приклад запису даних у Firestore
+const addData = async (ref, data) => {
+  const newDocRef = doc(ref);
+  await setDoc(newDocRef, data);
+};
+
 
 export default {
   name: "NewsComponent",
+  firebase:{
+    titles: titlesRef,
+    news: newsRef,
+  },
+  
   components: {
     CardVue
   },
-  async created() {
-    const store = useStore();
-    this.news = await store.fetchNews();
-  },
   data() {
     return {
-      news: [],
+      titles: [
+        "Програма підтримки малого бізнесу", 
+        "Грант на розвиток екологічних проектів", 
+        "Міжнародний форум з соціальної відповідальності"
+      ],
+      news: [
+        "Фонд XYZ запускає нову програму підтримки малого бізнесу",
+        "Фонд XYZ отримав грант на розвиток екологічних проектів",
+        "Фонд XYZ організує міжнародний форум з питань соціальної відповідальності"
+      ],
       newNews: "",
-      titelNews: "",
-      editTitle: "",
-      editText: "",
-      deleteTitle: ""
+      titelNews:""
     };
   },
-  
   methods: {
-    async addNews() {
-      const store = useStore();
+    addNews() {
       if (this.newNews.trim() !== "") {
-        await store.addNews({ text: this.newNews, title: this.titelNews });
-        this.news = await store.fetchNews();
+        newsRef.push(this.newNews);
+        titlesRef.push(this.titelNews)
         this.newNews = "";
-        this.titelNews = "";
-      }
-    },
-    async updateNewsByTitle() {
-      const store = useStore();
-      const newsItem = this.news.find(news => news.title === this.editTitle);
-      if (newsItem) {
-        if (this.editText.trim() === "") {
-          console.log("Поля не можуть бути порожніми");
-          return;
-        }
-        newsItem.text = this.editText;
-        await store.updateNews(newsItem);
-        this.news = await store.fetchNews();
-        this.editTitle = "";
-        this.editText = "";
-      } else {
-        console.log("Новина з таким заголовком не знайдена");
-      }
-    },
-    async deleteNewsByTitle() {
-      const store = useStore();
-      const newsItem = this.news.find(news => news.title === this.deleteTitle);
-      if (newsItem) {
-        await store.deleteNews(newsItem.id);
-        this.news = await store.fetchNews();
-        this.deleteTitle = "";
-      } else {
-        console.log("Новина з таким заголовком не знайдена");
+        this.titelNews = ""
+        toastr.success("Додано")
       }
     }
   }
@@ -116,111 +95,61 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+
+.container{
+  margin-left: 35vw;
+  margin-top: 60px;
 }
 
-.header {
+.title{
+  display: flex ;
   text-align: center;
-  margin-bottom: 20px;
+  
 }
 
-.title {
-  font-size: 2rem;
-  color: #333;
+ul {
+  list-style-type: none;
+  padding: 0;
 }
-
-.container-news {
+.container-news{
   margin-top: 30px;
   margin-bottom: 30px;
-  list-style: none;
-  padding: 0;
-  display: flex; justify-content: center; 
-  align-items: center;
-  flex-direction: column;
 }
 
-.card {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-}
-
-.buttons {
-  display: flex;
-  justify-content: space-between;
-}
-
-.edit-button,
-.delete-button,
-.submit-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  margin-top: 10px;
-}
-
-.edit-button {
-  background-color: #4CAF50;
-  color: white;
-}
-
-.edit-button:hover {
-  background-color: #45a049;
-}
-
-.delete-button {
-  background-color: #f44336;
-  color: white;
-}
-
-.delete-button:hover {
-  background-color: #e53935;
-}
-
-.submit-button {
-  background-color: #4CAF50;
-  color: white;
-}
-
-.submit-button:hover {
-  background-color: #45a049;
-}
-
-.form-container {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+form {
+  width: 40%;
   margin-top: 20px;
+  display: block;
 }
 
 form label {
-  display: block;
   margin-top: 10px;
-  font-weight: bold;
+  width: 40% ;
 }
 
-form input,
-form select {
-  width: 100%;
+input {
   padding: 8px;
-  margin-top: 5px;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-sizing: border-box;
 }
 
 form button {
-  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin-top: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+form button:hover {
+  background-color: #45a049;
 }
 </style>
